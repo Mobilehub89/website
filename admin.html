@@ -1,0 +1,372 @@
+<html lang="en">
+ <head>
+  <meta charset="utf-8"/>
+  <meta content="width=device-width, initial-scale=1" name="viewport"/>
+  <title>
+   MOBILE HUB Admin Dashboard
+  </title>
+  <script src="https://cdn.tailwindcss.com">
+  </script>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&amp;display=swap" rel="stylesheet"/>
+  <style>
+   body {
+      font-family: "Roboto", sans-serif;
+    }
+  </style>
+ </head>
+ <body class="bg-[#f8f9fa] min-h-screen flex flex-col">
+  <div class="flex flex-1 min-h-screen">
+   <!-- Sidebar -->
+   <aside class="bg-[#0f2a47] w-72 flex flex-col text-white">
+    <div class="flex flex-col items-center py-6 border-b border-[#0a1a2e]">
+     <img alt="" class="rounded-full w-20 h-20 object-cover" height="80" src="" width="80"/>
+     <h2 class="mt-3 font-semibold text-lg">
+      Jeffrey DelaCruz
+     </h2>
+    </div>
+    <nav class="flex-1 overflow-y-auto mt-6 px-3">
+     <ul class="space-y-1 text-sm">
+      <!-- Dashboard -->
+      <li>
+       <button aria-controls="dashboard-menu" aria-expanded="true" class="flex items-center w-full text-[#a0b8d6] hover:text-white hover:bg-[#0a1a2e] rounded px-3 py-2" id="dashboard-btn" type="button">
+        <i class="fas fa-tachometer-alt mr-3 text-[#f0a500]">
+        </i>
+        Dashboard
+       </button>
+      </li>
+      <!-- Record Management -->
+      <li>
+       <button aria-controls="record-management-menu" aria-expanded="false" class="flex items-center w-full text-[#a0b8d6] hover:text-white hover:bg-[#0a1a2e] rounded px-3 py-2" id="record-management-btn" type="button">
+        <i class="fas fa-database mr-3 text-[#d94a4a]">
+        </i>
+        Record Management
+       </button>
+      </li>
+      <!-- Supplier -->
+      <li>
+       <button aria-controls="supplier-menu" aria-expanded="false" class="flex items-center w-full text-[#a0b8d6] hover:text-white hover:bg-[#0a1a2e] rounded px-3 py-2" id="supplier-btn" type="button">
+        <i class="fas fa-truck mr-3 text-[#6a4a9a]">
+        </i>
+        Supplier
+       </button>
+      </li>
+      <!-- Category -->
+      <li>
+       <button class="flex items-center w-full text-[#a0b8d6] hover:text-white hover:bg-[#0a1a2e] rounded px-3 py-2" id="category-btn" type="button">
+        <i class="fas fa-tags mr-3 text-[#b94a6a]">
+        </i>
+        Category
+       </button>
+      </li>
+      <!-- Product -->
+      <li>
+       <button class="flex items-center w-full text-[#a0b8d6] hover:text-white hover:bg-[#0a1a2e] rounded px-3 py-2" id="product-btn" type="button">
+        <i class="fas fa-box-open mr-3 text-[#4a8ab9]">
+        </i>
+        Product
+       </button>
+      </li>
+      <!-- Unit of Measurement -->
+      <li>
+       <button class="flex items-center w-full text-[#a0b8d6] hover:text-white hover:bg-[#0a1a2e] rounded px-3 py-2" id="unit-btn" type="button">
+        <i class="fas fa-ruler-combined mr-3 text-[#4a9a8a]">
+        </i>
+        Unit of Measurement
+       </button>
+      </li>
+      <!-- Purchase Requests -->
+      <li>
+       <button aria-controls="purchase-requests-menu" aria-expanded="false" class="flex items-center w-full text-[#a0b8d6] hover:text-white hover:bg-[#0a1a2e] rounded px-3 py-2" id="purchase-requests-btn" type="button">
+        <i class="fas fa-file-alt mr-3 text-[#b94a8a]">
+        </i>
+        Purchase Requests
+        <i class="fas fa-chevron-down ml-auto text-xs">
+        </i>
+       </button>
+       <ul class="hidden mt-1 ml-8 space-y-1 text-xs text-[#a0b8d6]" id="purchase-requests-menu">
+        <li>
+         <button class="w-full text-left hover:text-white cursor-pointer px-2 py-1 rounded hover:bg-[#0a1a2e]" id="purchase-suppliers-btn" type="button">
+          Suppliers
+         </button>
+        </li>
+        <li>
+         <button class="w-full text-left hover:text-white cursor-pointer px-2 py-1 rounded hover:bg-[#0a1a2e]" id="purchase-leadtime-btn" type="button">
+          Lead Time
+         </button>
+        </li>
+       </ul>
+      </li>
+      <!-- Inventory -->
+      <li>
+       <button aria-controls="inventory-menu" aria-expanded="false" class="flex items-center w-full text-[#a0b8d6] hover:text-white hover:bg-[#0a1a2e] rounded px-3 py-2" id="inventory-btn" type="button">
+        <i class="fas fa-warehouse mr-3 text-[#4ab98a]">
+        </i>
+        Inventory
+        <i class="fas fa-chevron-down ml-auto text-xs">
+        </i>
+       </button>
+       <ul class="hidden mt-1 ml-8 space-y-1 text-xs text-[#a0b8d6]" id="inventory-menu">
+        <li>
+         <button class="w-full text-left hover:text-white cursor-pointer px-2 py-1 rounded hover:bg-[#0a1a2e]" id="inventory-receiving-btn" type="button">
+          Receiving Items
+         </button>
+        </li>
+        <li>
+         <button class="w-full text-left hover:text-white cursor-pointer px-2 py-1 rounded hover:bg-[#0a1a2e]" id="inventory-backorder-btn" type="button">
+          Back Order
+         </button>
+        </li>
+        <li>
+         <button class="w-full text-left hover:text-white cursor-pointer px-2 py-1 rounded hover:bg-[#0a1a2e]" id="inventory-critical-btn" type="button">
+          Critical Levels
+         </button>
+        </li>
+        <li>
+         <button class="w-full text-left hover:text-white cursor-pointer px-2 py-1 rounded hover:bg-[#0a1a2e]" id="inventory-sales-btn" type="button">
+          Sales
+         </button>
+        </li>
+        <li>
+         <button class="w-full text-left hover:text-white cursor-pointer px-2 py-1 rounded hover:bg-[#0a1a2e]" id="inventory-damage-btn" type="button">
+          Damage
+         </button>
+        </li>
+        <li>
+         <button class="w-full text-left hover:text-white cursor-pointer px-2 py-1 rounded hover:bg-[#0a1a2e]" id="inventory-obsolete-btn" type="button">
+          Obsolete
+         </button>
+        </li>
+       </ul>
+      </li>
+      <!-- Orders -->
+      <li>
+       <button class="flex items-center w-full text-[#a0b8d6] hover:text-white hover:bg-[#0a1a2e] rounded px-3 py-2" id="orders-btn" type="button">
+        <i class="fas fa-shopping-cart mr-3 text-[#d9a84a]">
+        </i>
+        Orders
+       </button>
+       <ul class="ml-8 text-xs text-[#a0b8d6]">
+        <li>
+         <button class="w-full text-left hover:text-white cursor-pointer px-2 py-1 rounded hover:bg-[#0a1a2e]" id="orders-view-btn" type="button">
+          View and Manage Customer Orders
+         </button>
+        </li>
+       </ul>
+      </li>
+      <!-- Sales (POS) -->
+      <li>
+       <button class="flex items-center w-full text-[#a0b8d6] hover:text-white hover:bg-[#0a1a2e] rounded px-3 py-2" id="sales-btn" type="button">
+        <i class="fas fa-cash-register mr-3 text-[#db4437]">
+        </i>
+        Sales (POS)
+       </button>
+      </li>
+     </ul>
+    </nav>
+   </aside>
+   <!-- Main content -->
+   <div class="flex-1 flex flex-col">
+    <!-- Top Navbar -->
+    <header class="flex items-center justify-between bg-[#0f2a47] px-4 md:px-6 h-14 text-white">
+     <div class="flex items-center space-x-4">
+      <button aria-label="Back to main site" class="text-white text-lg focus:outline-none">
+       <i class="fas fa-arrow-left">
+       </i>
+      </button>
+      <div class="font-semibold text-lg select-none">
+       MOBILE HUB Admin
+      </div>
+     </div>
+     <div class="flex items-center space-x-6">
+      <button aria-label="Notifications" class="relative text-white text-lg focus:outline-none">
+       <i class="fas fa-bell">
+       </i>
+       <span class="absolute -top-1 -right-2 bg-[#ff5722] text-xs rounded-full px-1.5 font-semibold">
+        2
+       </span>
+      </button>
+      <div class="flex items-center space-x-2 bg-[#ff5722] px-3 py-1 rounded cursor-pointer select-none">
+       <img alt="Small profile image of John David, a man with short hair wearing a suit and tie" class="rounded-full w-8 h-8 object-cover" height="32" src="https://storage.googleapis.com/a1aa/image/b74a45a9-9ce8-4ff4-a980-73b65908316d.jpg" width="32"/>
+       <span class="text-sm font-semibold">
+        Jeffrey
+       </span>
+      </div>
+      <button aria-label="Logout" class="text-white text-lg focus:outline-none hover:text-gray-300">
+       <i class="fas fa-sign-out-alt">
+       </i>
+      </button>
+     </div>
+    </header>
+    <!-- Dashboard content placeholder -->
+    <main class="p-4 md:p-6 space-y-6 bg-[#f8f9fa] flex-1 overflow-auto" id="main-content">
+     <h1 class="text-xl font-semibold text-[#222] mb-3">
+      Dashboard
+     </h1>
+     <p class="text-gray-600">
+      Welcome to the MOBILE HUB Admin dashboard. Use the sidebar to navigate
+          through the system.
+     </p>
+    </main>
+   </div>
+  </div>
+  <script>
+   // Sidebar menu toggle logic
+    const toggles = [
+      "purchase-requests",
+      "inventory"
+    ];
+
+    toggles.forEach((id) => {
+      const btn = document.getElementById(id + "-btn");
+      const menu = document.getElementById(id + "-menu");
+      if (btn && menu) {
+        btn.addEventListener("click", () => {
+          const expanded = btn.getAttribute("aria-expanded") === "true";
+          btn.setAttribute("aria-expanded", !expanded);
+          if (expanded) {
+            menu.classList.add("hidden");
+          } else {
+            menu.classList.remove("hidden");
+          }
+        });
+      }
+    });
+
+    // Main content container
+    const mainContent = document.getElementById("main-content");
+
+    // Content for each menu item
+    const contentMap = {
+      "dashboard-btn": {
+        title: "Dashboard",
+        body: `Welcome to the MOBILE HUB Admin dashboard. Use the sidebar to navigate through the system.`,
+      },
+      "record-management-btn": {
+        title: "Record Management",
+        body: `Manage all your records efficiently in this section.`,
+      },
+      "supplier-btn": {
+        title: "Supplier Information",
+        body: `
+          <p class="text-gray-700 mb-4">Here is the detailed supplier information displayed after clicking the Supplier menu.</p>
+         
+        `,
+      },
+      "category-btn": {
+        title: "Category",
+        body: `Manage product categories here.`,
+      },
+      "product-btn": {
+        title: "Product",
+        body: `Manage your products here.`,
+      },
+      "unit-btn": {
+        title: "Unit of Measurement",
+        body: `Manage units of measurement here.`,
+      },
+      "purchase-suppliers-btn": {
+        title: "Purchase Requests - Suppliers",
+        body: `Detailed supplier info related to purchase requests.`,
+        
+      },
+      "purchase-leadtime-btn": {
+        title: "Purchase Requests - Lead Time",
+        body: `Manage lead times for purchase requests here.`,
+      },
+      "inventory-receiving-btn": {
+        title: "Inventory - Receiving Items",
+        body: `Manage receiving items in inventory.`,
+      },
+      "inventory-backorder-btn": {
+        title: "Inventory - Back Order",
+        body: `Manage back orders in inventory.`,
+      },
+      "inventory-critical-btn": {
+        title: "Inventory - Critical Levels",
+        body: `Monitor critical inventory levels.`,
+      },
+      "inventory-sales-btn": {
+        title: "Inventory - Sales",
+        body: `View sales related to inventory.`,
+      },
+      "inventory-damage-btn": {
+        title: "Inventory - Damage",
+        body: `Manage damaged inventory items.`,
+      },
+      "inventory-obsolete-btn": {
+        title: "Inventory - Obsolete",
+        body: `Manage obsolete inventory items.`,
+      },
+      "orders-btn": {
+        title: "Orders",
+        body: `Manage all orders here.`,
+      },
+      "orders-view-btn": {
+        title: "Orders - View and Manage Customer Orders",
+        body: `View and manage customer orders in detail.`,
+      },
+      "sales-btn": {
+        title: "Sales (POS)",
+        body: `Manage point of sale transactions here.`,
+      },
+    };
+
+    // Function to update main content
+    function updateMainContent(id) {
+      const content = contentMap[id];
+      if (!content) return;
+      mainContent.innerHTML = `
+        <h1 class="text-xl font-semibold text-[#222] mb-3">${content.title}</h1>
+        <div class="text-gray-700">${content.body}</div>
+      `;
+    }
+
+    // Attach click listeners to all buttons with IDs in contentMap
+    Object.keys(contentMap).forEach((id) => {
+      const btn = document.getElementById(id);
+      if (btn) {
+        btn.addEventListener("click", () => {
+          // If button controls a submenu, toggle submenu visibility
+          const ariaControls = btn.getAttribute("aria-controls");
+          if (ariaControls) {
+            const submenu = document.getElementById(ariaControls);
+            if (submenu) {
+              const expanded = btn.getAttribute("aria-expanded") === "true";
+              btn.setAttribute("aria-expanded", !expanded);
+              if (expanded) {
+                submenu.classList.add("hidden");
+              } else {
+                submenu.classList.remove("hidden");
+              }
+            }
+          }
+          updateMainContent(id);
+        });
+      }
+    });
+
+    // Also attach click listeners to submenu buttons (purchase-suppliers-btn, purchase-leadtime-btn, inventory submenu buttons, orders-view-btn)
+    const submenuButtonIds = [
+      "purchase-suppliers-btn",
+      "purchase-leadtime-btn",
+      "inventory-receiving-btn",
+      "inventory-backorder-btn",
+      "inventory-critical-btn",
+      "inventory-sales-btn",
+      "inventory-damage-btn",
+      "inventory-obsolete-btn",
+      "orders-view-btn",
+    ];
+
+    submenuButtonIds.forEach((id) => {
+      const btn = document.getElementById(id);
+      if (btn) {
+        btn.addEventListener("click", () => {
+          updateMainContent(id);
+        });
+      }
+    });
+  </script>
+ </body>
+</html>
