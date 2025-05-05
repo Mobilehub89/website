@@ -1,0 +1,678 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Inventory Management</title>
+<style>
+  /* Reset */
+  * {
+    box-sizing: border-box;
+  }
+
+  body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    margin: 0;
+    background: #f4f6f8;
+    color: #333;
+    min-height: 100vh;
+  }
+
+  header {
+    background: #2a9d8f;
+    color: white;
+    padding: 1rem 2rem;
+    font-size: 1.5rem;
+    font-weight: 700;
+    text-align: center;
+    box-shadow: 0 2px 5px rgb(0 0 0 / 0.15);
+  }
+
+  main {
+    margin: 1rem auto 2rem;
+    max-width: 1200px;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 3px 10px rgb(0 0 0 / 0.1);
+    padding: 1rem 2rem 2rem 2rem;
+  }
+
+  /* Tabs */
+  .tabs {
+    display: flex;
+    border-bottom: 2px solid #ddd;
+    user-select: none;
+  }
+  .tab {
+    padding: 0.75rem 1.25rem;
+    cursor: pointer;
+    border: 2px solid transparent;
+    border-bottom: none;
+    background: #e9f5f2;
+    color: #2a9d8f;
+    font-weight: 600;
+    margin-right: 0.5rem;
+    border-radius: 6px 6px 0 0;
+    transition: background 0.3s ease, color 0.3s ease;
+  }
+  .tab.active {
+    background: white;
+    color: #1c5f56;
+    border-color: #2a9d8f;
+    border-bottom: 2px solid white;
+  }
+  .tab:hover:not(.active) {
+    background: #cce7e4;
+  }
+
+  .tab-content {
+    padding-top: 1rem;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 1rem;
+  }
+  th, td {
+    padding: 8px 12px;
+    border-bottom: 1px solid #ddd;
+    text-align: left;
+  }
+  th {
+    background: #2a9d8f;
+    color: white;
+    font-weight: 600;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+  }
+  tbody tr:hover {
+    background: #f1f9f8;
+  }
+
+  form {
+    margin-top: 1rem;
+    display: grid;
+    grid-template-columns: repeat(auto-fit,minmax(180px,1fr));
+    gap: 1rem;
+  }
+  label {
+    font-weight: 600;
+    margin-bottom: 0.25rem;
+    display: block;
+  }
+  input[type="text"],
+  input[type="number"],
+  select {
+    padding: 0.35rem 0.5rem;
+    font-size: 1rem;
+    border: 1.5px solid #cccccc;
+    border-radius: 5px;
+    width: 100%;
+    transition: border-color 0.3s ease;
+  }
+  input[type="text"]:focus,
+  input[type="number"]:focus,
+  select:focus {
+    outline: none;
+    border-color: #2a9d8f;
+  }
+  button {
+    background: #2a9d8f;
+    border: none;
+    color: white;
+    padding: 0.65rem 1rem;
+    border-radius: 5px;
+    font-weight: 600;
+    cursor: pointer;
+    justify-self: start;
+    margin-top: 1.5rem;
+    transition: background 0.3s ease;
+  }
+  button:hover:enabled {
+    background: #1c5f56;
+  }
+  button:disabled {
+    background: #92b9b2;
+    cursor: not-allowed;
+  }
+
+  .status-critical {
+    color: #e63946;
+    font-weight: 700;
+  }
+  .status -backorder {
+    color: #f4a261;
+    font-weight: 700;
+  }
+
+  /* Responsive for desktop but also smaller windows */
+  @media (max-width: 800px) {
+    main {
+      padding: 1rem;
+    }
+    form {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  .message {
+    background: #2a9d8f;
+    color: white;
+    padding: 0.5rem 1rem;
+    border-radius: 5px;
+    margin: 1rem 0 0 0;
+    font-weight: 600;
+    display: none;
+  }
+  .message.show {
+    display: block;
+  }
+  #backButton {
+  margin-left: auto; /* Pushes the back button to the right */
+  margin-top: 0; /* Aligns it vertically with the search button */
+}
+</style>
+</head>
+<body>
+<header>Inventory Management</header>
+<button aria-label="Logout" onclick="window.location.href='admin.html'" class="flex items-center w-full text-[#a0b8d6] hover:text-white hover:bg-[#0a1a2e] rounded px-3 py-2">
+  <i class="fas fa-sign-out-alt mr-3 text-[#f0a500]"></i>
+  Back
+</button>
+<main>
+  <div class="tabs" role="tablist" aria-label="Inventory Sections">
+    <button class="tab active" role="tab" aria-selected="true" aria-controls="receiving" id="tab-receiving">Receiving Items</button>
+    <button class="tab" role="tab" aria-selected="false" aria-controls="backorder" id="tab-backorder">Back Order</button>
+    <button class="tab" role="tab" aria-selected="false" aria-controls="critical" id="tab-critical">Critical Levels</button>
+    <button class="tab" role="tab" aria-selected="false" aria-controls="sales" id="tab-sales">Sales</button>
+    <button class="tab" role="tab" aria-selected="false" aria-controls="damage" id="tab-damage">Damage</button>
+    <button class="tab" role="tab" aria-selected="false" aria-controls="obsolete" id="tab-obsolete">Obsolete Items</button>
+  </div>
+
+  <section id="receiving" class="tab-content" role="tabpanel" aria-labelledby="tab-receiving">
+    <h2>Receiving Items</h2>
+    <form id="receiveForm" aria-label="Form to receive new items into inventory">
+      <div>
+        <label for="receive-name">Item Name</label>
+        <input type="text" id="receive-name" name="name" required autocomplete="off" />
+      </div>
+      <div>
+        <label for="receive-qty">Quantity</label>
+        <input type="number" id="receive-qty" name="quantity" min="1" required />
+      </div>
+      <div>
+        <label for="receive-critical">Critical Level</label>
+        <input type="number" id="receive-critical" name="critical" min="0" value="5" required />
+      </div>
+      <div>
+        <label for="receive-backorder">Back Order?</label>
+        <select id="receive-backorder" name="backorder">
+          <option value="false" selected>No</option>
+          <option value="true">Yes</option>
+        </select>
+      </div>
+      <button type="submit">Add / Update Item</button>
+    </form>
+    <div class="message" id="receiveMessage"></div>
+  </section>
+  
+  <section id="backorder" class="tab-content" role="tabpanel" aria-labelledby="tab-backorder" hidden>
+    <h2>Back Order Items</h2>
+    <table aria-label="List of items on backorder" id="backorderTable">
+      <thead>
+        <tr>
+          <th>Item Name</th>
+          <th>Quantity</th>
+          <th>Mark Received</th>
+        </tr>
+      </thead>
+      <tbody>
+        <!-- backorder list -->
+      </tbody>
+    </table>
+  </section>
+
+  <section id="critical" class="tab-content" role="tabpanel" aria-labelledby="tab-critical" hidden>
+    <h2>Critical Levels</h2>
+    <table aria-label="List of items below critical level" id="criticalTable">
+      <thead>
+        <tr>
+          <th>Item Name</th>
+          <th>Current Quantity</th>
+          <th>Critical Level</th>
+          <th>Remove</th>
+        </tr>
+      </thead>
+      <tbody>
+        <!-- critical items -->
+      </tbody>
+    </table>
+  </section>
+
+  <section id="sales" class="tab-content" role="tabpanel" aria-labelledby="tab-sales" hidden>
+    <h2>Sales</h2>
+    <form id="salesForm" aria-label="Form to log sales">
+      <div>
+        <label for="sales-item">Select Item</label>
+        <select id="sales-item" name="item" required>
+          <!-- Options dynamically populated -->
+        </select>
+      </div>
+      <div>
+        <label for="sales-qty">Quantity Sold</label>
+        <input type="number" id="sales-qty" name="quantity" min="1" required />
+      </div>
+      <button type="submit">Log Sale</button>
+    </form>
+    <div class="message" id="salesMessage"></div>
+  </section>
+
+  <section id="damage" class="tab-content" role="tabpanel" aria-labelledby="tab-damage" hidden>
+    <h2>Damage</h2>
+    <form id="damageForm" aria-label="Form to log damaged items">
+      <div>
+        <label for="damage-item">Select Item</label>
+        <select id="damage-item" name="item" required>
+          <!-- Options dynamically populated -->
+        </select>
+      </div>
+      <div>
+        <label for="damage-qty">Quantity Damaged</label>
+        <input type="number" id="damage-qty" name="quantity" min="1" required />
+      </div>
+      <div>
+        <label for="damage-reason">Reason</label>
+        <input type="text" id="damage-reason" name="reason" placeholder="Brief description" autocomplete="off" />
+      </div>
+      <button type="submit">Log Damage</button>
+    </form>
+    <div class="message" id="damageMessage"></div>
+    <h3>Damage Log</h3>
+    <table aria-label="List of damaged items" id="damageLogTable">
+      <thead>
+        <tr>
+          <th>Item Name</th>
+          <th>Quantity Damaged</th>
+          <th>Reason</th>
+          <th>Timestamp</th>
+          <th>Remove</th>
+        </tr>
+      </thead>
+      <tbody>
+        <!-- damage log -->
+      </tbody>
+    </table>
+  </section>
+
+  <section id="obsolete" class="tab-content" role="tabpanel" aria-labelledby="tab-obsolete" hidden>
+    <h2>Obsolete Items</h2>
+    <form id="obsoleteForm" aria-label="Form to mark items as obsolete">
+      <div>
+        <label for="obsolete-item">Select Item</label>
+        <select id="obsolete-item" name="item" required>
+          <!-- Options dynamically populated -->
+        </select>
+      </div>
+      <button type="submit">Mark as Obsolete</button>
+    </form>
+    <div class="message" id="obsoleteMessage"></div>
+    <h3>Obsolete Items List</h3>
+    <table aria-label="List of obsolete items" id="obsoleteTable">
+      <thead>
+        <tr>
+          <th>Item Name</th>
+          <th>Marked On</th>
+          <th>Remove</th>
+        </tr>
+      </thead>
+      <tbody>
+        <!-- obsolete items -->
+      </tbody>
+    </table>
+  </section>
+</main>
+
+<script>
+  (() => {
+    let items = JSON.parse(localStorage.getItem('items') || '{}');
+    let damageLog = JSON.parse(localStorage.getItem('damageLog') || '[]');
+    let nextItemId = localStorage.getItem('nextItemId') ? Number(localStorage.getItem('nextItemId')) : 1;
+
+    const tabs = document.querySelectorAll('.tab');
+    const sections = document.querySelectorAll('.tab-content');
+
+    tabs.forEach(tab => {
+      tab.addEventListener('click', () => {
+        tabs.forEach(t => {
+          t.classList.remove('active');
+          t.setAttribute('aria-selected', 'false');
+        });
+        sections.forEach(s => s.hidden = true);
+
+        tab.classList.add('active');
+        tab.setAttribute('aria-selected', 'true');
+        const target = tab.getAttribute('aria-controls');
+        document.getElementById(target).hidden = false;
+
+        if(target === 'backorder') {
+          renderBackOrder();
+        } else if(target === 'critical') {
+          renderCritical();
+        } else if(target === 'sales') {
+          populateItemSelect('sales-item', false);
+        } else if(target === 'damage') {
+          populateItemSelect('damage-item', false);
+          renderDamageLog();
+        } else if(target === 'obsolete') {
+          populateItemSelect('obsolete-item', false);
+          renderObsolete();
+        }
+      });
+    });
+
+    function saveAll() {
+      localStorage.setItem('items', JSON.stringify(items));
+      localStorage.setItem('damageLog', JSON.stringify(damageLog));
+      localStorage.setItem('nextItemId', nextItemId.toString());
+    }
+
+    const receiveForm = document.getElementById('receiveForm');
+    const receiveMessage = document.getElementById('receiveMessage');
+    receiveForm.addEventListener('submit', e => {
+      e.preventDefault();
+      const name = receiveForm .name.value.trim();
+      const quantity = Number(receiveForm.quantity.value);
+      const critical = Number(receiveForm.critical.value);
+      const backorder = receiveForm.backorder.value === 'true';
+
+      if (!name || quantity <= 0 || critical < 0) {
+        showMessage(receiveMessage, 'Invalid input values', true);
+        return;
+      }
+
+      let foundId = null;
+      for (let id in items) {
+        if (items[id].name.toLowerCase() === name.toLowerCase() && !items[id].obsolete) {
+          foundId = id;
+          break;
+        }
+      }
+      if (foundId) {
+        items[foundId].quantity += quantity;
+        items[foundId].critical = critical;
+        items[foundId].backorder = backorder;
+      } else {
+        items[nextItemId] = {
+          name,
+          quantity,
+          critical,
+          backorder,
+          obsolete: false
+        };
+        nextItemId++;
+      }
+      saveAll();
+      receiveForm.reset();
+      receiveForm.critical.value = 5;
+      showMessage(receiveMessage, 'Item added/updated successfully');
+    });
+
+    function renderBackOrder() {
+      const tbody = document.querySelector('#backorderTable tbody');
+      tbody.innerHTML = '';
+      Object.entries(items).forEach(([id, item]) => {
+        if (item.backorder && !item.obsolete) {
+          const tr = document.createElement('tr');
+          tr.innerHTML = `
+            <td>${item.name}</td>
+            <td>${item.quantity}</td>
+            <td><button data-id="${id}" aria-label="Mark ${item.name} as received">Received</button></td>
+          `;
+          tbody.appendChild(tr);
+        }
+      });
+      tbody.querySelectorAll('button').forEach(btn => {
+        btn.addEventListener('click', e => {
+          const id = e.target.dataset.id;
+          if (items[id]) {
+            items[id].backorder = false;
+            saveAll();
+            renderBackOrder();
+            showMessage(null, `Marked ${items[id].name} as received from backorder.`);
+          }
+        });
+      });
+      if (tbody.children.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="3" style="text-align:center; color:#666;">No backorder items</td></tr>';
+      }
+    }
+
+    function renderCritical() {
+      const tbody = document.querySelector('#criticalTable tbody');
+      tbody.innerHTML = '';
+      let hasCritical = false;
+      Object.entries(items).forEach(([id, item]) => {
+        if (!item.obsolete && item.quantity <= item.critical) {
+          hasCritical = true;
+          const tr = document.createElement('tr');
+          tr.innerHTML = `
+            <td>${item.name}</td>
+            <td class="status-critical">${item.quantity}</td>
+            <td>${item.critical}</td>
+            <td><button data-id="${id}" class="remove-critical" aria-label="Remove ${item.name} from critical items">Remove</button></td>
+          `;
+          tbody.appendChild(tr);
+        }
+      });
+      tbody.querySelectorAll('.remove-critical').forEach(btn => {
+        btn.addEventListener('click', e => {
+          const id = e.target.dataset.id;
+          if (items[id]) {
+            delete items[id];
+            saveAll();
+            renderCritical();
+            showMessage(null, `Removed ${id} from inventory (critical items)`);
+            populateItemSelect('sales-item');
+            populateItemSelect('damage-item');
+            populateItemSelect('obsolete-item');
+            renderBackOrder();
+            renderDamageLog();
+            renderObsolete();
+          }
+        });
+      });
+      if (!hasCritical) {
+        tbody.innerHTML = '<tr><td colspan="4" style="text-align:center; color:#666;">No items below critical level</td></tr>';
+      }
+    }
+
+    function populateItemSelect(selectId, includeObsolete = false) {
+      const select = document.getElementById(selectId);
+      if (!select) return;
+      select.innerHTML = '';
+      let count = 0;
+      Object.entries(items).forEach(([id, item]) => {
+        if (includeObsolete || !item.obsolete) {
+          const option = document.createElement('option');
+          option.value = id;
+          option.textContent = item.name + ' (Qty: ' + item.quantity + ')';
+          select.appendChild(option);
+          count++;
+        }
+      });
+      if (count === 0) {
+        select.innerHTML = '<option disabled>No items available</option>';
+      }
+    }
+
+    const salesForm = document.getElementById('salesForm');
+    const salesMessage = document.getElementById('salesMessage');
+    salesForm.addEventListener('submit', e => {
+      e.preventDefault();
+      const itemId = salesForm['item'].value;
+      const qtySold = Number(salesForm['quantity'].value);
+      if (!items[itemId]) {
+        showMessage(salesMessage, 'Selected item not found', true);
+        return;
+      }
+      if (qtySold <= 0) {
+        showMessage(salesMessage, 'Quantity sold must be positive', true);
+        return;
+      }
+      if (items[itemId].quantity < qtySold) {
+        showMessage(salesMessage, `Not enough stock for ${items[itemId].name}`, true);
+        return;
+      }
+      items[itemId].quantity -= qtySold;
+      saveAll();
+      salesForm.reset();
+      showMessage(salesMessage, `Logged sale of ${qtySold} units for ${items[itemId].name}`);
+    });
+
+    const damageForm = document.getElementById('damageForm');
+    const damageMessage = document.getElementById('damageMessage');
+    damageForm.addEventListener('submit', e => {
+      e.preventDefault();
+      const itemId = damageForm['item'].value;
+      const qtyDamaged = Number(damageForm['quantity'].value);
+      const reason = damageForm['reason'].value.trim();
+
+      if (!items[itemId]) {
+        showMessage(damageMessage, 'Selected item not found', true);
+        return;
+      }
+      if (qtyDamaged <= 0) {
+        showMessage(damageMessage, 'Damage quantity must be positive', true);
+        return;
+      }
+      if (items[itemId].quantity < qtyDamaged) {
+        showMessage(damageMessage, `Not enough stock for ${items[itemId].name}`, true);
+        return;
+      }
+      items[itemId].quantity -= qtyDamaged;
+
+      const now = new Date().toLocaleString();
+      damageLog.push({
+        itemId,
+        quantity: qtyDamaged,
+        reason: reason || 'N/A',
+        timestamp: now
+      });
+      saveAll();
+      damageForm.reset();
+      renderDamageLog();
+      showMessage(damageMessage, `Logged damage of ${qtyDamaged} units for ${items[itemId].name}`);
+    });
+
+    function renderDamageLog() {
+      const tbody = document.querySelector('#damageLogTable tbody');
+      tbody.innerHTML = '';
+      if (damageLog.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; color:#666;">No damage records</td></tr>';
+        return;
+      }
+      damageLog.slice().reverse().forEach(logEntry => {
+        const item = items[logEntry.itemId];
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td>${item ? item.name : 'Unknown'}</td>
+          <td>${logEntry.quantity}</td>
+          <td>${logEntry.reason}</td>
+          <td>${logEntry.timestamp}</td>
+          <td><button data-id="${logEntry.itemId}" class="remove-damage" aria-label="Remove ${item ? item.name : 'Unknown'} from damage log">Remove</button></td>
+        `;
+        tbody.appendChild(tr);
+      });
+      tbody.querySelectorAll('.remove-damage').forEach(btn => {
+        btn.addEventListener('click', e => {
+          const id = e.target.dataset.id;
+          damageLog = damageLog.filter(log => log.itemId !== id);
+          saveAll();
+          renderDamageLog();
+          showMessage(null, `Removed damage record for item ID: ${id}`);
+        });
+      });
+    }
+
+    const obsoleteForm = document.getElementById('obsoleteForm');
+    const obsoleteMessage = document.getElementById('obsoleteMessage');
+    obsoleteForm.addEventListener('submit', e => {
+      e.preventDefault();
+      const itemId = obsoleteForm['item'].value;
+      if (!items[itemId]) {
+        showMessage(obsoleteMessage, 'Selected item not found', true);
+        return;
+      }
+      items[itemId].obsolete = true;
+      saveAll();
+      obsoleteForm.reset();
+      renderObsolete();
+      showMessage(obsoleteMessage, `Marked ${items[itemId].name} as obsolete`);
+    });
+
+    function renderObsolete() {
+      const tbody = document.querySelector('#obsoleteTable tbody');
+      tbody.innerHTML = '';
+      let hasObsolete = false;
+      Object.entries(items).forEach(([id, item]) => {
+        if (item.obsolete) {
+          hasObsolete = true;
+          const tr = document.createElement('tr');
+          tr.innerHTML = `
+            <td>${item.name}</td>
+            <td>${new Date().toLocaleDateString()}</td>
+            <td><button data-id="${id}" class="remove-obsolete" aria-label="Remove ${item.name} from obsolete items">Remove</button></td>
+          `;
+          tbody.appendChild(tr);
+        }
+      });
+      tbody.querySelectorAll('.remove-obsolete').forEach(btn => {
+        btn.addEventListener('click', e => {
+          const id = e.target.dataset.id;
+          delete items[id];
+          saveAll();
+          renderObsolete();
+          showMessage(null, `Removed ${id} from obsolete items`);
+          populateItemSelect('sales-item');
+          populateItemSelect('damage-item');
+          populateItemSelect('obsolete-item');
+          renderBackOrder();
+          renderCritical();
+          renderDamageLog();
+        });
+      });
+      if (!hasObsolete) {
+        tbody.innerHTML = '<tr><td colspan="3" style="text-align:center; color:#666;">No obsolete items</td></tr>';
+      }
+    }
+
+    function showMessage(element, msg, isError = false) {
+      if (!element) {
+        alert(msg);
+        return;
+      }
+      element.textContent = msg;
+      element.style.backgroundColor = isError ? '#e63946' : '#2a9d8f';
+      element.classList.add('show');
+      setTimeout(() => {
+        element.classList.remove('show');
+      }, 3500);
+    }
+
+    window.addEventListener('load', () => {
+      populateItemSelect('sales-item');
+      populateItemSelect('damage-item');
+      populateItemSelect('obsolete-item');
+      renderBackOrder();
+      renderCritical();
+      renderDamageLog();
+      renderObsolete();
+    });
+
+  })();
+</script>
+</body>
+</html>
+
