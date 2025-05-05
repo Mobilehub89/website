@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Admin - Customer Orders Management</title>
+  <style>
+    /* Reset and base */
+    * {
+      box-sizing: border-box;
+    }
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #f5f7fa;
+      color: #333;
+      height: 100vh;
+      overflow: hidden;
+    }
+    header {
+      background-color: #2c3e50;
+      padding: 1rem 2rem;
+      color: #ecf0f1;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+      user-select: none;
+    }
+    header h1 {
+      margin: 0;
+      font-weight: 700;
+      font-size: 1.5rem;
+      letter-spacing: 1px;
+    }
+    .back-button {
+      background-color: transparent;
+      border: 2px solid #ecf0f1;
+      color: #ecf0f1;
+      padding: 6px 14px;
+      font-weight: 600;
+      font-size: 0.9rem;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: background-color 0.3s ease, color 0.3s ease;
+      user-select: none;
+      margin-left: 1.5rem;
+      flex-shrink: 0;
+    }
+    .back-button:hover {
+      background-color: #1abc9c;
+      border-color: #1abc9c;
+      color: white;
+    }
+    main {
+      padding: 1.5rem 2rem;
+      height: calc(100vh - 66px);
+      overflow-y: auto;
+    }
+    h2 {
+      font-weight: 600;
+      font-size: 1.3rem;
+      margin-bottom: 1rem;
+      color: #34495e;
+    }
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    form#add-order-form {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+      align-items: flex-end;
+      margin-bottom: 1.5rem;
+      background: #fff;
+      padding: 1rem 1.5rem;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgb(0 0 0 / 0.07);
+    }
+    form#add-order-form > div {
+      display: flex;
+      flex-direction: column;
+      flex: 1 1 180px;
+    }
+    form#add-order-form label {
+      font-size: 0.85rem;
+      margin-bottom: 0.3rem;
+      color: #555;
+    }
+    form#add-order-form input[type="text"],
+    form#add-order-form input[type="number"],
+    form#add-order-form select {
+      font-size: 1rem;
+      padding: 8px 10px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+      transition: border-color 0.2s ease;
+    }
+    form#add-order-form input[type="text"]:focus,
+    form#add-order-form input[type="number"]:focus,
+    form#add-order-form select:focus {
+      border-color: #1abc9c;
+      outline: none;
+    }
+    form#add-order-form button {
+      padding: 10px 18px;
+      background-color: #1abc9c;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+      flex: 0 0 140px;
+    }
+    form#add-order-form button:hover {
+      background-color: #138d75;
+    }
+    table {
+      width: 100%;
+      border-collapse: separate;
+      border-spacing: 0 12px;
+      font-size: 0.95rem;
+      box-shadow: 0 0 7px rgb(0 0 0 / 0.05);
+      border-radius: 8px;
+      background: white;
+      overflow: hidden;
+    }
+    thead tr {
+      background-color: #1abc9c;
+      color: white;
+      text-align: left;
+      font-weight: 700;
+    }
+    thead th {
+      padding: 12px 20px;
+    }
+    tbody tr {
+      background-color: #ffffff;
+      transition: background-color 0.2s ease;
+      cursor: default;
+    }
+    tbody tr:hover {
+      background-color: #ecf7f3;
+    }
+    tbody td {
+      padding: 15px 20px;
+      vertical-align: middle;
+    }
+    .status {
+      padding: 5px 12px;
+      border-radius: 20px;
+      font-weight: 600;
+      font-size: 0.85rem;
+      text-align: center;
+      min-width: 90px;
+      user-select: none;
+    }
+    /* status colors */
+    .status.pending {
+      background-color: #f39c12;
+      color: white;
+    }
+    .status.processing {
+      background-color: #2980b9;
+      color: white;
+    }
+    .status.completed {
+      background-color: #27ae60;
+      color: white;
+    }
+    .status.cancelled {
+      background-color: #c0392b;
+      color: white;
+    }
+    /* Action buttons */
+    button.action-btn {
+      border: none;
+      background-color: transparent;
+      cursor: pointer;
+      font-size: 1.1rem;
+      margin-right: 10px;
+      transition: color 0.3s ease;
+      user-select: none;
+    }
+    button.action-btn.update {
+      color: #2980b9;
+    }
+    button.action-btn.update:hover {
+      color: #1c5980;
+    }
+    button.action-btn.delete {
+      color: #c0392b;
+    }
+    button.action-btn.delete:hover {
+      color: #801f19;
+    }
+    /* Scrollbar styling */
+    main::-webkit-scrollbar {
+      width: 10px;
+    }
+    main::-webkit-scrollbar-track {
+      background: #f0f0f0;
+    }
+    main::-webkit-scrollbar-thumb {
+      background-color: #1abc9c;
+      border-radius: 10px;
+      border: 2px solid #f0f0f0;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>ShopAdmin</h1>
+  </header>
+  <button class="back-button" onclick="window.location.href='admin.html';">Back</button>
+  <main>
+    <div class="container">
+      <h2>Customer Orders</h2>
+      <form id="add-order-form" aria-label="Add new customer order form">
+        <div>
+          <label for="orderId">Order ID *</label>
+          <input type="text" id="orderId" name="orderId" placeholder="E.g., ORD123" required aria-required="true" />
+        </div>
+        <div>
+          <label for="customerName">Customer Name *</label>
+          <input type="text" id="customerName" name="customerName" placeholder="Customer full name" required aria-required="true" />
+        </div>
+        <div>
+          <label for="productName">Product *</label>
+          <input type="text" id="productName" name="productName" placeholder="Product name" required aria-required="true" />
+        </div>
+        <div>
+          <label for="quantity">Quantity *</label>
+          <input type="number" id="quantity" name="quantity" min="1" value="1" required aria-required="true" />
+        </div>
+        <div>
+          <label for="status">Status *</label>
+          <select id="status" name="status" required aria-required="true">
+            <option value="" disabled selected>Select status</option>
+            <option value="pending">Pending</option>
+            <option value="processing">Processing</option>
+            <option value="completed">Completed</option>
+            <option value="cancelled">Cancelled</option>
+          </select>
+        </div>
+        <button type="submit" aria-label="Add new order">Add Order</button>
+      </form>
+      <table id="orders-table" aria-label="Customer orders management table">
+        <thead>
+          <tr>
+            <th>Order ID</th>
+            <th>Customer Name</th>
+            <th>Product</th>
+            <th>Quantity</th>
+            <th>Status</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <!-- Orders will be dynamically populated here -->
+        </tbody>
+      </table>
+    </div>
+  </main>
+  <script>
+    // Orders array to hold orders client side
+    const orders = [];
+
+    const statuses = ['pending', 'processing', 'completed', 'cancelled'];
+
+    // Utility to capitalize first letter
+    function capitalize(word) {
+      if (!word) return '';
+      return word.charAt(0).toUpperCase() + word.slice(1);
+    }
+
+    // Render orders in table
+    function renderOrders() {
+      const tbody = document.querySelector('#orders-table tbody');
+      tbody.innerHTML = '';
+      if (orders.length === 0) {
+        const tr = document.createElement('tr');
+        const td = document.createElement('td');
+        td.setAttribute('colspan', '6');
+        td.style.textAlign = 'center';
+        td.style.padding = '30px 0';
+        td.style.color = '#666';
+        td.textContent = 'No orders available. Please add orders using the form above.';
+        tr.appendChild(td);
+        tbody.appendChild(tr);
+        return;
+      }
+      orders.forEach(order => {
+        const tr = document.createElement('tr');
+
+        const tdId = document.createElement('td');
+        tdId.textContent = order.id;
+
+        const tdCustomer = document.createElement('td');
+        tdCustomer.textContent = order.customer;
+
+        const tdProduct = document.createElement('td');
+        tdProduct.textContent = order.product;
+
+        const tdQuantity = document.createElement('td');
+        tdQuantity.textContent = order.quantity;
+
+        const tdStatus = document.createElement('td');
+        const spanStatus = document.createElement('span');
+        spanStatus.className = `status ${order.status}`;
+        spanStatus.textContent = capitalize(order.status);
+        tdStatus.appendChild(spanStatus);
+
+        const tdActions = document.createElement('td');
+        // Update status button
+        const btnUpdate = document.createElement('button');
+        btnUpdate.className = 'action-btn update';
+        btnUpdate.title = 'Update Status';
+        btnUpdate.setAttribute('aria-label', `Update status for order ${order.id}`);
+        btnUpdate.innerHTML = '&#9881;'; // Gear icon unicode
+        btnUpdate.addEventListener('click', () => {
+          updateOrderStatus(order.id);
+        });
+
+        // Delete button
+        const btnDelete = document.createElement('button');
+        btnDelete.className = 'action-btn delete';
+        btnDelete.title = 'Delete Order';
+        btnDelete.setAttribute('aria-label', `Delete order ${order.id}`);
+        btnDelete.innerHTML = '&#10006;'; // Cross mark unicode
+        btnDelete.addEventListener('click', () => {
+          deleteOrder(order.id);
+        });
+
+        tdActions.appendChild(btnUpdate);
+        tdActions.appendChild(btnDelete);
+
+        tr.appendChild(tdId);
+        tr.appendChild(tdCustomer);
+        tr.appendChild(tdProduct);
+        tr.appendChild(tdQuantity);
+        tr.appendChild(tdStatus);
+        tr.appendChild(tdActions);
+
+        tbody.appendChild(tr);
+      });
+    }
+
+    // Cycle status to next
+    function updateOrderStatus(orderId) {
+      const order = orders.find(o => o.id === orderId);
+      if (!order) return;
+      let idx = statuses.indexOf(order.status);
+      idx = (idx + 1) % statuses.length;
+      order.status = statuses[idx];
+      renderOrders();
+      alert(`Order ${orderId} status updated to ${capitalize(order.status)}`);
+    }
+
+    // Delete order from array
+    function deleteOrder(orderId) {
+      const index = orders.findIndex(o => o.id === orderId);
+      if (index === -1) return;
+      if (confirm(`Are you sure you want to delete order ${orderId}? This action cannot be undone.`)) {
+        orders.splice(index, 1);
+        renderOrders();
+      }
+    }
+
+    // Form submission handler
+    const form = document.getElementById('add-order-form');
+    form.addEventListener('submit', e => {
+      e.preventDefault();
+
+      const orderId = form.orderId.value.trim();
+      const customerName = form.customerName.value.trim();
+      const productName = form.productName.value.trim();
+      const quantity = parseInt(form.quantity.value);
+      const status = form.status.value;
+
+      // Validate inputs (additional to required attr)
+      if (!orderId || !customerName || !productName || !quantity || !status) {
+        alert('Please fill out all fields correctly.');
+        return;
+      }
+      if (orders.some(o => o.id.toLowerCase() === orderId.toLowerCase())) {
+        alert('Order ID already exists, please use a unique Order ID.');
+        return;
+      }
+      if (quantity < 1) {
+        alert('Quantity should be at least 1.');
+        return;
+      }
+
+      // Add new order
+      orders.push({
+        id: orderId,
+        customer: customerName,
+        product: productName,
+        quantity,
+        status,
+      });
+
+      renderOrders();
+      form.reset();
+      // Reset status select default
+      form.status.selectedIndex = 0;
+      form.orderId.focus();
+      alert(`Order ${orderId} has been added successfully!`);
+    });
+
+    // Initial render empty orders
+    renderOrders();
+  </script>
+</body>
+</html>
+
