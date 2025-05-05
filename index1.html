@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Simple Auth System</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background-image: url("https://img.freepik.com/premium-vector/online-data-protection-shield-abstract-with-computer-technology_29971-309.jpg?w=740");
+      background-repeat: no-repeat; /* Prevents the background image from repeating */
+      background-size: cover;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+
+    .card {
+      background-color: white;
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+      width: 100%;
+      max-width: 400px;
+      display: none;
+    }
+
+    .card.active {
+      display: block;
+    }
+
+    h2 {
+      text-align: center;
+      margin-bottom: 20px;
+      color: #333;
+    }
+
+    input, button {
+      width: 100%;
+      padding: 12px;
+      margin: 10px 0;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      font-size: 1em;
+    }
+
+    button {
+      background-color: #2980b9;
+      color: white;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #3498db;
+    }
+
+    .message {
+      margin-top: 20px;
+      text-align: center;
+      font-size: 1em;
+      color: #444;
+    }
+
+    .admin {
+      color: #e74c3c;
+      font-weight: bold;
+    }
+
+    .limited {
+      color: #27ae60;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Register Page -->
+  <div class="card active" id="registerCard">
+    <h2>Register</h2>
+    <form id="registerForm">
+      <input type="email" id="regEmail" placeholder="Email" required />
+      <input type="password" id="regPassword" placeholder="Password" required />
+      <button type="submit">Register</button>
+      <p>Already have an account? <a href="#" onclick="showForm('loginCard')">Login</a></p>
+    </form>
+  </div>
+
+  <!-- Login Page -->
+  <div class="card" id="loginCard">
+    <h2>Login</h2>
+    <form id="loginForm">
+      <input type="email" id="loginEmail" placeholder="Email" required />
+      <input type="password" id="loginPassword" placeholder="Password" required />
+      <button type="submit">Login</button>
+      <p>Don't have an account? <a href="#" onclick="showForm('registerCard')">Register</a></p>
+    </form>
+    </form>
+  </div>
+
+  <!-- Dashboard Page -->
+  <div class="card" id="dashboardCard">
+    <h2>Welcome</h2>
+    <div class="message" id="userMessage"></div>
+  </div>
+
+  <script>
+    const registerForm = document.getElementById('registerForm');
+    const loginForm = document.getElementById('loginForm');
+    const registerCard = document.getElementById('registerCard');
+    const loginCard = document.getElementById('loginCard');
+    const dashboardCard = document.getElementById('dashboardCard');
+    const userMessage = document.getElementById('userMessage');
+    
+    let users = [];
+    
+    function extractNameFromEmail(email) {
+      const namePart = email.split('@')[0];
+      return namePart.charAt(0).toUpperCase() + namePart.slice(1);
+    }
+
+     // Function to show the selected form
+     function showForm(formId) {
+        // Hide both forms
+        registerCard.classList.remove('active');
+        loginCard.classList.remove('active');
+
+        // Show the selected form
+        document.getElementById(formId).classList.add('active');
+    }
+    
+    registerForm.addEventListener('submit', function(e) {
+      e.preventDefault();
+      const email = document.getElementById('regEmail').value;
+      const password = document.getElementById('regPassword').value;
+    
+      users.push({ email, password });
+    
+      alert('Registration successful! Please log in.');
+    
+      registerCard.classList.remove('active');
+      loginCard.classList.add('active');
+    });
+    
+    loginForm.addEventListener('submit', function(e) {
+      e.preventDefault();
+      const email = document.getElementById('loginEmail').value;
+      const password = document.getElementById('loginPassword').value;
+    
+      const user = users.find(u => u.email === email && u.password === password);
+    
+      if (!user) {
+        alert('Invalid email or password.');
+        return;
+      }
+    
+      const username = extractNameFromEmail(email);
+    
+      loginCard.classList.remove('active');
+      dashboardCard.classList.add('active');
+    
+      if (email === 'raissamamaradlo09@gmail.com') {
+        userMessage.innerHTML = `Welcome, <strong>${username}</strong>! <br>Logged in as <span class="admin">Admin</span>`;
+        
+        // Redirecting to admin page
+        window.location.href ="admin.html"; 
+      } else {
+        userMessage.innerHTML = `Welcome, <strong>${username}</strong>! <br>Logged in as <span class="limited">Customer</span>`;
+        
+        // Redirecting to customer page
+        window.location.href ="reg1.html"; // Change to your customer page path
+      }
+    });
+  </script>
+  
